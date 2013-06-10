@@ -1,11 +1,11 @@
 
-# editable-record
+# editable-model
 
   Simple in-place editing integrated with component/model
 
 ## Installation
 
-    $ component install ericgj/editable-record
+    $ component install ericgj/editable-model
 
 ## API
 
