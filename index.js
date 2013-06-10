@@ -4,14 +4,14 @@ var Emitter = require('emitter')
 module.exports = EditableRec;
 
 function EditableRec(el, model){
- if (!(this instanceof EditableRec)) return new EditableRec(el,model);
- this.model = model;
- this.editables = [];
- this.doneKeys = "enter";
- this.cancelKeys = "esc";
- if (el) this.init(el);
- this.keys = K(el);
- return this;
+  if (!(this instanceof EditableRec)) return new EditableRec(el,model);
+  this.model = model;
+  this.editables = [];
+  this.doneKeys = "enter";
+  this.cancelKeys = "esc";
+  if (el) this.init(el);
+  this.keys = K(el);
+  return this;
 }
 
 EditableRec.prototype = new Emitter;
