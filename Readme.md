@@ -3,6 +3,8 @@
 
   Simple in-place editing integrated with component/model
 
+  <img src="http://i.imgur.com/9r6aXf0.png" title="Example" />
+
 ## Installation
 
     $ component install ericgj/editable-model
