@@ -33,7 +33,10 @@ EditableRec.prototype.done = function(){
   if (!this._editing) return this;
   for (var i=0;i<this.editables.length;++i) this.editables[i].done();
   this.emit('done', this.model);
-  if (this.model.save) this.model.save();
+  if (this.model.save){
+    if (this.model.dirty){ this.model.dirty() && this.model.save(); }
+    else                 { this.model.save(); }
+  }
   this._editing = false;
   this._keyunbind();
   return this;
@@ -89,8 +92,9 @@ EditableAttr.prototype.edit = function(){
 EditableAttr.prototype.done = function(){
   this.el.removeAttribute('contentEditable');
   this.el.blur();
-  if (this.attr() !== this.el.innerHTML){
-    this.attr(this.el.innerHTML);
+  var newval = this.el.innerText, oldval = this.attr();
+  if (oldval !== newval && oldval && newval){
+    this.attr(newval);
   }
 }
 

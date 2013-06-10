@@ -8,7 +8,10 @@
     "component/emitter": "*",
     "yields/k": "*"
   },
-  "development": {},
+  "development": {
+    "matthewmueller/hogan": "*",
+    "component/domify": "*"
+  },
   "license": "MIT",
   "main": "index.js",
   "scripts": [

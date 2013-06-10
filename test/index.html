@@ -35,8 +35,12 @@
         border: 1px solid lightgrey;
       }
 
+      .editable:hover {
+        background-color: #FFFFAA;
+      }
+
       [contentEditable=true] {
-        background-color: lightyellow;
+        background-color: #FFFFAA;
       }
 
     </style>
@@ -44,18 +48,27 @@
   <body>
     <h1>Editable Record</h1>
     <div class="table" id="editable1">
-      <ul class="header row">
-        <li style="width: 28%">Name</li>
-        <li style="width: 38%">Occupation</li>
-        <li style="width: 18%">Dependents</li>
-      </ul>
-      <ul class="row">
-        <li data-model-attr="name" class="editable"></li>
-        <li data-model-attr="occupation" class="editable"></li>
-        <li data-model-attr="dependents" class="editable"></li>
-      </ul>
     </div>
   <script src="../build/build.js"></script>
+  <script id="template" type="text/plain">
+    <ul class="header row">
+      <li style="width: 28%">Name</li>
+      <li style="width: 38%">Occupation</li>
+      <li style="width: 18%">Dependents</li>
+    </ul>
+    {{#persons}}
+    <ul data-id="{{id}}" class="data row">
+      <li data-model-attr="name" class="editable">{{name}}</li>
+      <li data-model-attr="occupation" class="editable">{{occupation}}</li>
+      <li data-model-attr="dependents" class="editable">{{dependents}}</li>
+    </ul>
+    {{/persons}}
+    <ul class="data-new row">
+      <li data-model-attr="name" class="editable"></li>
+      <li data-model-attr="occupation" class="editable"></li>
+      <li data-model-attr="dependents" class="editable"></li>
+    </ul>
+  </script>
     <script>
       function Model(){
 
@@ -67,37 +80,93 @@
 
         model.attr = function(name){
           this.prototype[name] = function(val){
-            if (val) this.attributes[name] = val; return this.attributes[name] || null;
+            this.attributes = this.attributes || {};
+            this.attributes[name] = this.attributes[name] || null;
+            if (arguments.length==1) {
+              this.attributes[name] = val; 
+              this._dirty = true;
+            }
+            return this.attributes[name];
           }
           return this;
         }
 
         model.prototype = {};
-        model.prototype.attributes = {};
         model.prototype.save = function(){
-          console.log('save %o', this.attributes);
+          console.log('save: dirty=%s, attributes= %o', this.dirty(), this.attributes);
+          this._dirty = false;
         }
+        model.prototype.dirty = function(){ return this._dirty; }
+
         return model;
       }
       
-      var Person = Model().attr('name').attr('occupation').attr('dependents')
-        , person = new Person();
+      var Person = Model().attr('id').attr('name').attr('occupation').attr('dependents')
+        , models = [ new Person(), new Person() ];
       
-      var EditableRec = require('editable-record');
+      models[0].id("1");
+      models[0].name("Alfie");
+      models[0].occupation("bricklayer");
+      models[0].dependents("2");
+      models[0].save();
 
-      var el  = document.querySelector("#editable1")
-        , rec = EditableRec(el, person );
+      models[1].id("2");
+      models[1].name("Barbara");
+      models[1].occupation(null);
+      models[1].dependents(null);
+      models[1].save();
 
-      var attrEls = el.querySelectorAll('.editable');
-      for (var i=0; i<attrEls.length; ++i){
-        var attrEl = attrEls[i];
-        attrEl.onclick = function(){ rec.edit(); }
+      /////////////////////////////////////////////////////
+      var EditableRec = require('editable-record')
+        , hogan = require('matthewmueller-hogan')
+        , domify = require('component-domify')
+
+      var el  = document.getElementById("editable1");
+      var tmpl = hogan( document.getElementById("template").innerText, 
+                        {persons: models}
+                       );
+      var struc = domify(tmpl);
+
+      //////////////////////////////////////////////////////
+      function bindEditable(el,model,recs){
+        var rec = new EditableRec(el,model);
+
+        /* edit on click */
+        var attrEls = el.querySelectorAll('.editable');
+        for (var i=0; i<attrEls.length; ++i){
+          var attrEl = attrEls[i];
+          attrEl.onclick = function(){ rec.edit(); }
+        }
+
+        /* done other records on edit */
+        rec.on('edit', function(){ 
+          for (var i=0;i<recs.length;++i){
+            if (recs[i] !== rec && recs[i].editing()) {
+              recs[i].done();
+            }
+          }
+        });
+        rec.on('done', function(){ console.log('done: id=%s', rec.model.id()) });
+        rec.on('edit', function(){ console.log('edit: id=%s', rec.model.id()) });
+        rec.on('cancel', function(){ console.log('cancel: id=%s', rec.model.id()) });
+
+        recs.push(rec);
       }
 
-      rec.on('done', function(){ console.log('done') });
-      rec.on('edit', function(){ console.log('edit') });
-      rec.on('cancel', function(){ console.log('cancel') });
+                            
+      var recs = [];
 
+      for (var i=0;i<struc.length;++i) el.appendChild(struc[i]);
+
+      var recEls = el.querySelectorAll('.data');
+      for (var i=0; i<recEls.length; ++i){
+        var recEl = recEls[i], model = models[i];
+        bindEditable(recEl, model, recs);
+      }
+      var recEl = el.querySelector('.data-new');
+      bindEditable(recEl, new Person(), recs);
+
+      
     </script>
   </body>
 </html>
