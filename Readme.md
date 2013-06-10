@@ -9,7 +9,7 @@
 
 ## Example
 
-See [test/index.html](/ericgj/editable-model/blob/master/test/index.html).
+See [test/index.html](/test/index.html).
 
 ## API
 
