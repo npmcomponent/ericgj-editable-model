@@ -2,7 +2,7 @@
   "name": "editable-model",
   "repo": "ericgj/editable-model",
   "description": "Simple in-place editing integrated with component/model",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": [],
   "dependencies": {
     "component/emitter": "*",

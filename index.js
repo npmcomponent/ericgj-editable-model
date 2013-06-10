@@ -92,8 +92,8 @@ EditableAttr.prototype.edit = function(){
 EditableAttr.prototype.done = function(){
   this.el.removeAttribute('contentEditable');
   this.el.blur();
-  var newval = this.el.innerText, oldval = this.attr();
-  if (oldval !== newval && oldval && newval){
+  var newval = this.el.innerText || null, oldval = this.attr() || null;
+  if (oldval !== newval){
     this.attr(newval);
   }
 }
