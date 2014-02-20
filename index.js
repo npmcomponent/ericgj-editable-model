@@ -1,5 +1,5 @@
-var Emitter = require('emitter')
-  , K       = require('k')
+var Emitter = require('component-emitter')
+  , K       = require('yields-k')
 
 module.exports = EditableRec;
 

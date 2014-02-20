@@ -1,0 +1,12 @@
+{
+  "name": "ericgj-editable-model",
+  "description": "Simple in-place editing integrated with component/model",
+  "version": "0.0.3",
+  "keywords": [],
+  "main": "index.js",
+  "dependencies": {
+    "component-emitter": "git://github.com/npmcomponent/component-emitter.git",
+    "yields-k": "git://github.com/npmcomponent/yields-k.git"
+  },
+  "license": "MIT"
+}
